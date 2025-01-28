@@ -97,8 +97,40 @@ void BigInt::BigInt_hex(std::string hex) {
 
 BigInt::~BigInt() {
     delete[] digits;
-    digits = nullptr; // Prevent dangling pointer
+    digits = nullptr; 
 }
+
+BigInt BigInt::operator+(BigInt const& another) const{
+    uint32_t carry = 0;
+    uint64_t temp;
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
+        temp = this->digits[i] + another.digits[i] + carry;
+        result.digits[i] = temp & ( (1 << (BigInt::w - 1)) - 1);
+        carry = temp >> BigInt::w;
+    }
+    return result;
+}
+
+BigInt BigInt::operator-(BigInt const& another) const{
+    uint32_t borrow = 0;
+    long long temp;
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
+        temp = this->digits[i] - another.digits[i] - borrow;
+        if (temp >= 0) {
+            result.digits[i] = temp;
+            borrow = 0;
+        }
+        else {
+            result.digits[i] = (1 << (BigInt::w - 1)) + temp;
+            borrow = 1;
+        }
+    }
+    return result;
+}
+
+
 
 // void BigInt::BigInt_bin(std::string bin) {
 //     // bin string is written in big-endian system

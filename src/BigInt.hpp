@@ -14,12 +14,13 @@ class BigInt {
 private:
     uint32_t* digits; 
     static const int number_of_digits = 64;
-    
+    static const int w = 32;
     void BigInt_bin(std::string bin);
     void BigInt_oct(std::string oct);
     void BigInt_dec(std::string dec);
     void BigInt_hex(std::string hex);  
     void remove_leading_zeroes(std::string& number);
+
 public:
     //constructors
     BigInt();
@@ -30,7 +31,7 @@ public:
 
     //functions
     void print() const;
-    
+
     //operators
     BigInt operator<< (uint32_t const& left) const;
     BigInt operator>> (uint32_t const& right) const;
