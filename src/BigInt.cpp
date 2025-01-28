@@ -3,65 +3,151 @@
 
 
 BigInt::BigInt() {
-    digits = new uint32_t[BigInt.number_of_digits]();
+    digits = new uint32_t[BigInt::number_of_digits]();
 }
 
 BigInt::BigInt(BigInt const& another) {
-    digits = new uint32_t[BigInt.number_of_digits];
-    for (size_t i = 0; i < BigInt.number_of_digits; ++i) {
+    digits = new uint32_t[BigInt::number_of_digits];
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
         this->digits[i] = another.digits[i];
     }
 }
 
 BigInt::BigInt(std::string number, BASE base) {
-    switch (base) {
-        case BIN:
-            this->BigInt_bin(number);
-            break;
-        case OCT:
-            this->BigInt_oct(number);
-            break;
-        case DEC:
-            this->BigInt_dec(number);
-            break;
-        case HEX:
-            this->BigInt_hex(number);
-            break;
-        default:
-            throw std::invalid_argument("Invalid BASE value");
-    }
+    digits = new uint32_t[BigInt::number_of_digits](); // Initialize with zeros
+
+    BigInt_hex(number);
+
+    // switch (base) {
+    //     case BIN:
+    //         this->BigInt_bin(number);
+    //         break;
+    //     case OCT:
+    //         this->BigInt_oct(number);
+    //         break;
+    //     case DEC:
+    //         this->BigInt_dec(number);
+    //         break;
+    //     case HEX:
+    //         this->BigInt_hex(number);
+    //         break;
+    //     default:
+    //         throw std::invalid_argument("Invalid BASE value");
+    // }
 }
 
 BigInt::BigInt(uint32_t one_digit_number) {
-    digits = new uint32_t[BigInt.number_of_digits]();
+    digits = new uint32_t[BigInt::number_of_digits]();
     digits[0] = one_digit_number;
+}
+
+void BigInt::print() const{
+    for (int i = 0; i < BigInt::number_of_digits; ++i) {
+        std::cout << digits[i] << std::endl;
+    }
+}
+
+void BigInt::remove_leading_zeroes(std::string& number) {
+    size_t first_non_zero = number.find_first_not_of('0');
+    number = (first_non_zero == std::string::npos) ? "0" : number.substr(first_non_zero);
+}
+
+void BigInt::BigInt_hex(std::string hex) {
+    remove_leading_zeroes(hex);
+    if (hex.empty()) {
+        throw std::invalid_argument("Hex string is empty after removing leading zeroes.");
+    }
+
+    size_t hex_length = hex.length();
+    if (hex_length > 512) { 
+        throw std::invalid_argument("Hex string represents a number larger than 2048 bits.");
+    }
+
+
+    size_t chunk_index = 0;
+    uint32_t accum = 0;
+    size_t count = 0;
+
+    for (size_t i = hex_length; i > 0; --i) {
+        char hex_char = hex[i - 1];
+        uint32_t hex_value = 0;
+
+        if (hex_char >= '0' && hex_char <= '9') {
+            hex_value = hex_char - '0';
+        } else if (hex_char >= 'A' && hex_char <= 'F') {
+            hex_value = hex_char - 'A' + 10;
+        } else if (hex_char >= 'a' && hex_char <= 'f') {
+            hex_value = hex_char - 'a' + 10;
+        } else {
+            throw std::invalid_argument("Invalid character in hex string.");
+        }
+
+        // Shift and accumulate
+        accum |= (hex_value << (count * 4));
+        count++;
+
+        // Write to digits every 8 hex digits or at the last character
+        if (count == 8 || i == 1) {
+            digits[chunk_index++] = accum;
+            count = 0;
+            accum = 0;
+        }
+    }
 }
 
 BigInt::~BigInt() {
     delete[] digits;
+    digits = nullptr; // Prevent dangling pointer
 }
 
-void BigInt::remove_leading_zeroes(std::string& number) {
-    size_t first_non_zero = number.find_first_of('1');
-    number = (first_non_zero == std::string::npos) ? "0" : number.substr(first_non_zero);
-}
+// void BigInt::BigInt_bin(std::string bin) {
+//     // bin string is written in big-endian system
+//     remove_leading_zeroes(bin);
+//     if (bin.empty()) {
+//         throw std::invalid_argument("Binary string is empty after removing leading zeroes.");
+//     }
 
-void BigInt::BigInt_bin(std::string bin) {
-    // bin string is written in bigendian notation
+//     size_t bin_length = bin.length();
+//     if (bin_length > 2048) {
+//         throw std::invalid_argument("Binary string is too long, up to 2048 bits only.");
+//     }
 
-    // not finished yet
-    if (bin.length() > 2048) {
-        throw std::invalid_argument("bin str is too long, up to 2048 bits only");
-    }    
-    remove_leading_zeroes(bin);
-    uint32_t accum = 0;
-    int c = 0;
-    for (size_t i = bin.length() - 1; i >= 0; --i) {
-        if (i % 32 == 0) {
-            this->digits[c] = accum 
-            accum = 0;
-            c++;
-        }
-        accum += bin[i] * (2 << (32 - (i % 32)));
-    }
-}
+//     size_t num_chunks = (bin_length + 31) / 32;
+
+//     if (!digits) {
+//         digits = new uint32_t[num_chunks](); 
+//     }
+
+//     std::fill(digits, digits + num_chunks, 0); 
+
+//     uint32_t accum = 0;
+//     size_t count = 0;
+//     size_t chunk_index = 0; 
+
+//     for (size_t i = bin_length; i > 0; --i) { 
+//         if (bin[i - 1] == '1') { 
+//             accum |= (1U << count); 
+//         }
+//         count++;
+//         if (count == 32 || i == 1) {
+//             digits[chunk_index] = accum;
+//             chunk_index++;
+//             count = 0;
+//             accum = 0;
+//         }
+//     }
+// }
+
+// void BigInt::BigInt_oct(std::string oct) {
+//     // octal string is written in big-endian system
+//     remove_leading_zeroes(oct);
+
+//     if (bin.empty()) {
+//         throw std::invalid_argument("Binary string is empty after removing leading zeroes.");
+//     }
+
+//     size_t bin_length = bin.length();
+//     if (bin_length > 2048) {
+//         throw std::invalid_argument("Binary string is too long, up to 2048 bits only.");
+//     }
+// }

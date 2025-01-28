@@ -1,16 +1,19 @@
 #pragma once
-#include <csdtint>
+#include <cstdint>
 #include <string>
 #include "Base.hpp"
+#include <algorithm>
+#include <stdexcept>
+#include <iostream>
 
-using cstdint::uint32_t;
+using std::uint32_t;
 
 
 
 class BigInt {
 private:
     uint32_t* digits; 
-    static const number_of_digits = 64;
+    static const int number_of_digits = 64;
     
     void BigInt_bin(std::string bin);
     void BigInt_oct(std::string oct);
@@ -25,6 +28,9 @@ public:
     BigInt(uint32_t one_digit_number);
     ~BigInt();
 
+    //functions
+    void print() const;
+    
     //operators
     BigInt operator<< (uint32_t const& left) const;
     BigInt operator>> (uint32_t const& right) const;
