@@ -130,6 +130,43 @@ BigInt BigInt::operator-(BigInt const& another) const{
     return result;
 }
 
+int BigInt::cmp(const BigInt& another) const {
+    int i = BigInt::number_of_digits - 1;
+    while (this->digits[i] == another.digits[i]) {
+        --i;
+    }
+    if (i == -1) {
+        return 0;
+    }
+    else {
+        if (this->digits[i] > another.digits[i]) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
+}
+
+bool BigInt::operator==(const BigInt& another) const {
+    return (this->cmp(another) == 0);
+}
+
+bool BigInt::operator<(const BigInt& another) const {
+    return (this->cmp(another) == -1);
+}
+
+bool BigInt::operator>(const BigInt& another) const {
+    return (this->cmp(another) == 1);
+}
+
+bool BigInt::operator<=(const BigInt& another) const {
+    return *this < another || *this == another;
+}
+
+bool BigInt::operator>=(const BigInt& another) const {
+    return *this > another || *this == another;
+}
 
 
 // void BigInt::BigInt_bin(std::string bin) {

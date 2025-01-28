@@ -20,7 +20,7 @@ private:
     void BigInt_dec(std::string dec);
     void BigInt_hex(std::string hex);  
     void remove_leading_zeroes(std::string& number);
-
+    int cmp(const BigInt& another) const;
 public:
     //constructors
     BigInt();
