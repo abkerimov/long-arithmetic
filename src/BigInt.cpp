@@ -106,7 +106,7 @@ BigInt BigInt::operator+(BigInt const& another) const{
     BigInt result;
     for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
         temp = this->digits[i] + another.digits[i] + carry;
-        result.digits[i] = temp & ( (1 << (BigInt::w - 1)) - 1);
+        result.digits[i] = temp & (1u<<BigInt::w - 1);
         carry = temp >> BigInt::w;
     }
     return result;
@@ -123,7 +123,7 @@ BigInt BigInt::operator-(BigInt const& another) const{
             borrow = 0;
         }
         else {
-            result.digits[i] = (1 << (BigInt::w - 1)) + temp;
+            result.digits[i] = (1u << BigInt::w ) + temp;
             borrow = 1;
         }
     }
@@ -211,7 +211,26 @@ BigInt BigInt::operator^(BigInt const& another) {
     return result;
 }
 
-BigInt BigInt::operator*(uint32_t const& another) {
+BigInt BigInt::operator*(uint32_t const& one_digit) {
+    uint32_t carry = 0;
+    BigInt result;
+    for (size_t i = 0; i < BigInteger::number_of_digits; ++i) {
+        uint64_t temp = this->digits[i] * one_digit + carry;
+        result[i] = temp & (1u << BigInt::w - 1) 
+    }
+}
+
+BigInt BigInt::operator*(BigInt const& another) {
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
+        BigInt temp = *this * another[i];
+        temp = temp << i;
+        result = result + temp;
+    }
+    return result;
+}
+
+std::pair<BigInt, BigInt> divmod(const BigInt& another) {
     
 }
 
