@@ -43,6 +43,7 @@ public:
     BigInt operator+ (BigInt const& another) const;
     BigInt operator- (BigInt const& another) const;
     BigInt operator* (BigInt const& another) const;
+    BigInt operator* (uint32_t const& another) const;
     BigInt operator/ (BigInt const& another) const;
     BigInt operator% (BigInt const& another) const;
 

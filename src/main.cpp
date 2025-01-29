@@ -15,5 +15,8 @@ int main() {
     std::cout <<  (s >= one) << std::endl;
     std::cout <<  (s < one) << std::endl;
     std::cout <<  (s > one) << std::endl;
+    std::cout << "----------" << std::endl;
+    BigInt x = s << 1;
+    x.print();
     return 0;
 }

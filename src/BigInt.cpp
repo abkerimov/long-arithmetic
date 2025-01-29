@@ -168,6 +168,52 @@ bool BigInt::operator>=(const BigInt& another) const {
     return *this > another || *this == another;
 }
 
+BigInt BigInt::operator<<(uint32_t const& left) const {
+    // operator is for bigendian notation, so it will look like this [1, 0, 0, ...] -> [0, 1, 0, ...]
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits - left; ++i) {
+        result.digits[i+left] = this->digits[i];
+    }
+    return result;
+}
+
+BigInt BigInt::operator>>(uint32_t const& right) const {
+    // operator is for bigendian notation, so it will look like this [0, 1, 0, ...] -> [1, 0, 0, ...]
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits - right; ++i) {
+        result.digits[i] = this->digits[i + right];
+    }
+    return result;
+}
+
+BigInt BigInt::operator&(BigInt const& another) {
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
+        result.digits[i] = this->digits[i] & another.digits[i];
+    }
+    return result;
+}
+
+BigInt BigInt::operator|(BigInt const& another) {
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
+        result.digits[i] = this->digits[i] | another.digits[i];
+    }
+    return result;
+}
+
+
+BigInt BigInt::operator^(BigInt const& another) {
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
+        result.digits[i] = this->digits[i] ^ another.digits[i];
+    }
+    return result;
+}
+
+BigInt BigInt::operator*(uint32_t const& another) {
+    
+}
 
 // void BigInt::BigInt_bin(std::string bin) {
 //     // bin string is written in big-endian system
