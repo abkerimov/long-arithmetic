@@ -230,8 +230,34 @@ BigInt BigInt::operator*(BigInt const& another) {
     return result;
 }
 
+int count_digits() {
+    int i = 0;
+    while (this->digits[i] != 0) {
+        ++i;
+    }
+    return i;
+}
+
+int BigInt::bit_length() {
+    int last = this->count_digits();
+    if (last == 0) return 0;
+    int last_digit = this->digits[last - 1];
+    int count = 0;
+    while (last_digit >= 0) {
+        count++;
+        last_digit /= 2;
+    }
+    return 32 * (last - 1) + count;
+}
+
 std::pair<BigInt, BigInt> divmod(const BigInt& another) {
-    
+    int k = bit_length();
+    BigInt R = *this;
+    BigInt Q;
+    while (R >= another) {
+        int t = R.bit_length();
+        
+    } 
 }
 
 // void BigInt::BigInt_bin(std::string bin) {
