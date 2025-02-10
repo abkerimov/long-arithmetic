@@ -186,7 +186,7 @@ BigInt BigInt::operator>>(uint32_t const& right) const {
     return result;
 }
 
-BigInt BigInt::operator&(BigInt const& another) {
+BigInt BigInt::operator&(BigInt const& another) const{
     BigInt result;
     for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
         result.digits[i] = this->digits[i] & another.digits[i];
@@ -194,7 +194,7 @@ BigInt BigInt::operator&(BigInt const& another) {
     return result;
 }
 
-BigInt BigInt::operator|(BigInt const& another) {
+BigInt BigInt::operator|(BigInt const& another) const{
     BigInt result;
     for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
         result.digits[i] = this->digits[i] | another.digits[i];
@@ -203,7 +203,7 @@ BigInt BigInt::operator|(BigInt const& another) {
 }
 
 
-BigInt BigInt::operator^(BigInt const& another) {
+BigInt BigInt::operator^(BigInt const& another) const{
     BigInt result;
     for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
         result.digits[i] = this->digits[i] ^ another.digits[i];
@@ -211,26 +211,27 @@ BigInt BigInt::operator^(BigInt const& another) {
     return result;
 }
 
-BigInt BigInt::operator*(uint32_t const& one_digit) {
+BigInt BigInt::operator*(uint32_t const& one_digit) const{
     uint32_t carry = 0;
     BigInt result;
-    for (size_t i = 0; i < BigInteger::number_of_digits; ++i) {
+    for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
         uint64_t temp = this->digits[i] * one_digit + carry;
-        result[i] = temp & (1u << BigInt::w - 1) 
+        result.digits[i] = temp & (1u << BigInt::w - 1) ;
     }
+    return result;
 }
 
-BigInt BigInt::operator*(BigInt const& another) {
+BigInt BigInt::operator*(BigInt const& another) const{
     BigInt result;
     for (size_t i = 0; i < BigInt::number_of_digits; ++i) {
-        BigInt temp = *this * another[i];
+        BigInt temp = *this * another.digits[i];
         temp = temp << i;
         result = result + temp;
     }
     return result;
 }
 
-int count_digits() {
+int BigInt::count_digits() const {
     int i = 0;
     while (this->digits[i] != 0) {
         ++i;
@@ -238,7 +239,7 @@ int count_digits() {
     return i;
 }
 
-int BigInt::bit_length() {
+int BigInt::bit_length() const{
     int last = this->count_digits();
     if (last == 0) return 0;
     int last_digit = this->digits[last - 1];
@@ -250,14 +251,40 @@ int BigInt::bit_length() {
     return 32 * (last - 1) + count;
 }
 
-std::pair<BigInt, BigInt> divmod(const BigInt& another) {
-    int k = bit_length();
-    BigInt R = *this;
-    BigInt Q;
-    while (R >= another) {
-        int t = R.bit_length();
-        
-    } 
+std::pair<BigInt, BigInt> BigInt::LongDivMod(const BigInt& B) const {
+    int k = B.bit_length();  // Bit length of B
+    BigInt R(*this);  // R starts as A
+    BigInt Q;  // The quotient starts at 0
+
+    while (R >= B) {  // While R >= B, keep dividing
+        int t = R.bit_length();  // Bit length of R
+        BigInt C = LongShiftBitsToHigh(B, t - k);  // C = B shifted high
+
+        if (R < C) {  // If R is less than C, reduce t
+            t--;
+            C = LongShiftBitsToHigh(B, t - k);
+        }
+
+        R = R - C;  // Subtract C from R
+        Q = Q + (1 << (t - k));  // Update Q with the new bit set at (t - k)
+    }
+
+    return std::make_pair(Q, R);
+}
+
+BigInt& BigInt::operator=(BigInt const& another) {
+    if (this != &another) {  
+        this->digits = another.digits;
+    }
+    return *this;
+}
+
+BigInt BigInt::LongShiftBitsToHigh(const BigInt& B, int n) const {
+    BigInt result;
+    for (size_t i = 0; i < BigInt::number_of_digits - n; ++i) {
+        result.digits[i + n] = B.digits[i];
+    }
+    return result;
 }
 
 // void BigInt::BigInt_bin(std::string bin) {
@@ -311,3 +338,8 @@ std::pair<BigInt, BigInt> divmod(const BigInt& another) {
 //         throw std::invalid_argument("Binary string is too long, up to 2048 bits only.");
 //     }
 // }
+
+
+
+
+

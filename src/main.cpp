@@ -5,7 +5,7 @@
 int main() {
     BigInt s("fffffffffffffffffffffffffffffffffff", HEX);
     BigInt one(1u);
-    s.print();
+    s.print(); 
     one.print();
     BigInt sm1 = s - one;
     sm1.print();
@@ -18,5 +18,14 @@ int main() {
     std::cout << "----------" << std::endl;
     BigInt x = s << 1;
     x.print();
+    
+    auto pair_ = s.LongDivMod(one);
+    pair_.first.print();
     return 0;
 }
+
+
+
+
+
+

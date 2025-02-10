@@ -24,7 +24,8 @@ private:
     std::pair<BigInt, BigInt> divmod(BigInt const& another);
     int bit_length() const;
     int count_digits() const;
-    
+    void shift_bits_left(int left); 
+    BigInt LongShiftBitsToHigh(const BigInt& B, int n) const;
 public:
     //constructors
     BigInt();
@@ -57,4 +58,5 @@ public:
     bool operator<= (BigInt const& another) const;
     bool operator>= (BigInt const& another) const;
 
+    std::pair<BigInt, BigInt> LongDivMod(const BigInt& B) const;
 };  
